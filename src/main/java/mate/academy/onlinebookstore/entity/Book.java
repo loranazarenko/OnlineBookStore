@@ -1,4 +1,4 @@
-package com.example.onlinebookstore.entity;
+package mate.academy.onlinebookstore.entity;
 
 import java.math.BigDecimal;
 import javax.persistence.Column;
@@ -7,8 +7,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "books")
 public class Book {
     @Id
@@ -30,5 +32,4 @@ public class Book {
     private String description;
 
     private String coverImage;
-
 }

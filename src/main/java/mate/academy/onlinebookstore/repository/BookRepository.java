@@ -1,7 +1,7 @@
-package com.example.onlinebookstore.repository;
+package mate.academy.onlinebookstore.repository;
 
-import com.example.onlinebookstore.entity.Book;
 import java.util.List;
+import mate.academy.onlinebookstore.entity.Book;
 import org.springframework.stereotype.Repository;
 
 @Repository

@@ -1,7 +1,7 @@
-package com.example.onlinebookstore.service;
+package mate.academy.onlinebookstore.service;
 
-import com.example.onlinebookstore.entity.Book;
 import java.util.List;
+import mate.academy.onlinebookstore.entity.Book;
 import org.springframework.stereotype.Service;
 
 @Service
