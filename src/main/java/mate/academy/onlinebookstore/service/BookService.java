@@ -1,12 +1,14 @@
 package mate.academy.onlinebookstore.service;
 
 import java.util.List;
-import mate.academy.onlinebookstore.entity.Book;
-import org.springframework.stereotype.Service;
+import mate.academy.onlinebookstore.dto.BookDto;
+import mate.academy.onlinebookstore.dto.CreateBookRequestDto;
 
-@Service
 public interface BookService {
-    Book save(Book book);
 
-    List<Book> findAll();
+    BookDto save(CreateBookRequestDto requestDto);
+
+    BookDto findById(Long id);
+
+    List<BookDto> findAll();
 }
