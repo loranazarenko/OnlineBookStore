@@ -1,6 +1,7 @@
 package mate.academy.onlinebookstore.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -54,9 +55,12 @@ public class BookController {
         return bookService.update(id, bookDto);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete the book by id", description = "Delete the book by id")
+    @Operation(summary = "Delete the book by id",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Delete the book by id"),
+                    @ApiResponse(responseCode = "401", description = "Not found ID"),
+            })
     public void delete(@PathVariable Long id) {
         bookService.deleteById(id);
     }
