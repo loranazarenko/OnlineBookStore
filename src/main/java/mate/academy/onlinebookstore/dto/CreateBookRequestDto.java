@@ -3,7 +3,7 @@ package mate.academy.onlinebookstore.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import mate.academy.onlinebookstore.validation.Isbn;
+import org.hibernate.validator.constraints.ISBN;
 
 @Data
 public class CreateBookRequestDto {
@@ -11,7 +11,7 @@ public class CreateBookRequestDto {
     private String title;
     @NotNull
     private String author;
-    @Isbn
+    @ISBN
     private String isbn;
     @NotNull
     @Min(value = 0)

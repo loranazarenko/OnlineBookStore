@@ -1,0 +1,130 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-roles
+      author: lora_nazarenko
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: ADMIN
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: USER
+  - changeSet:
+      id: insert-users1
+      author: lora_nazarenko
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: email
+                  value: alice@com.net
+              - column:
+                  name: password
+                  value: $2a$10$fKNjRbcGU4uIGlnAmgh1E.Jc2./abkbOe7lwOl4jlDaL8sTbxt01.
+              - column:
+                  name: first_name
+                  value: Alice
+              - column:
+                  name: last_name
+                  value: Alice
+              - column:
+                  name: shipping_address
+                  value: "Street, City"
+  - changeSet:
+      id: insert-users2
+      author: lora_nazarenko
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: email
+                  value: bob@com.net
+              - column:
+                  name: password
+                  value: $2a$10$fKNjRbcGU4uIGlnAmgh1E.Jc2./abkbOe7lwOl4jlDaL8sTbxt01.
+              - column:
+                  name: first_name
+                  value: Bob
+              - column:
+                  name: last_name
+                  value: Bob
+              - column:
+                  name: shipping_address
+                  value: "Street, City"
+  - changeSet:
+      id: insert-users3
+      author: lora_nazarenko
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 3
+              - column:
+                  name: email
+                  value: jill@com.net
+              - column:
+                  name: password
+                  value: $2a$10$fKNjRbcGU4uIGlnAmgh1E.Jc2./abkbOe7lwOl4jlDaL8sTbxt01.
+              - column:
+                  name: first_name
+                  value: Jill
+              - column:
+                  name: last_name
+                  value: Jill
+              - column:
+                  name: shipping_address
+                  value: "Street, City"
+  - changeSet:
+      id: insert-users_roles
+      author: lora_nazarenko
+      preConditions:
+        - sqlCheck:
+            expectedResult: 1
+            sql: SELECT COUNT(*) FROM users WHERE email='alice@com.net'
+        - sqlCheck:
+            expectedResult: 1
+            sql: SELECT COUNT(*) FROM roles WHERE name='ADMIN'
+      changes:
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: role_id
+                  value: 1
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  value: 2
+              - column:
+                  name: role_id
+                  value: 1
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  value: 3
+              - column:
+                  name: role_id
+                  value: 2
