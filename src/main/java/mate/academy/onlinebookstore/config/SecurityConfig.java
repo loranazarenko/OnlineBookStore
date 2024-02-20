@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,22 +27,22 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
+                                                   UserDetailsService userDetailService)
+            throws Exception {
         return
                 httpSecurity
                         .cors(AbstractHttpConfigurer::disable)
                         .csrf(AbstractHttpConfigurer::disable)
                         .authorizeHttpRequests(
                                 auth -> auth
-                                  .requestMatchers("/auth/**", "/error", "/swagger-ui/**",
-                                    "/v3/api-docs/**")
-                                  .permitAll()
-                                  .anyRequest()
-                                  .authenticated()
+                                        .requestMatchers("/auth/**", "/error", "/swagger-ui/**",
+                                                "/v3/api-docs/**")
+                                        .permitAll()
+                                        .anyRequest()
+                                        .authenticated()
                         )
                         .httpBasic(Customizer.withDefaults())
-                        .sessionManagement(session -> session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS))
                         .userDetailsService(userDetailService)
                         .build();
     }
