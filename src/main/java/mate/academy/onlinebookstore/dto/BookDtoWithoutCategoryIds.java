@@ -1,10 +1,9 @@
 package mate.academy.onlinebookstore.dto;
 
-import java.util.Set;
 import lombok.Data;
 
 @Data
-public class BookDto {
+public class BookDtoWithoutCategoryIds {
     private Long id;
     private String title;
     private String author;
@@ -12,5 +11,4 @@ public class BookDto {
     private Double price;
     private String description;
     private String coverImage;
-    private Set<Long> categoryIds;
 }
