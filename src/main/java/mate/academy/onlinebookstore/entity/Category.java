@@ -16,16 +16,12 @@ import org.hibernate.annotations.Where;
 @Where(clause = "is_deleted=false")
 @Table(name = "categories")
 public class Category {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private String name;
-
     private String description;
-
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 }
