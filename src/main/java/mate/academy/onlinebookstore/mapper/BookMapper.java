@@ -1,6 +1,5 @@
 package mate.academy.onlinebookstore.mapper;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 import mate.academy.onlinebookstore.config.MapperConfig;
 import mate.academy.onlinebookstore.dto.BookDto;
@@ -24,9 +23,20 @@ public interface BookMapper {
 
     @AfterMapping
     default void setCategoryIds(@MappingTarget BookDto bookDto, Book book) {
-        Set<Long> idSet = book.getCategories().stream()
-                .map(Category::getId)
-                .collect(Collectors.toSet());
-        bookDto.categoryIds().addAll(idSet);
+        if (book.getCategories() == null) {
+            return;
+        }
+        new BookDto(
+                bookDto.id(),
+                bookDto.title(),
+                bookDto.author(),
+                bookDto.isbn(),
+                bookDto.price(),
+                bookDto.description(),
+                bookDto.coverImage(),
+                book.getCategories().stream()
+                        .map(Category::getId)
+                        .collect(Collectors.toSet())
+        );
     }
 }
