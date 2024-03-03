@@ -2,31 +2,31 @@ package mate.academy.onlinebookstore.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import mate.academy.onlinebookstore.validation.FieldMatch;
 import org.hibernate.validator.constraints.Length;
 
-@Data
 @FieldMatch(password = "password", repeatPassword = "repeatPassword")
-public class UserRegistrationRequestDto {
-    @NotBlank
-    @Email
-    private String email;
+public record UserRegistrationRequestDto(
+        @NotBlank
+        @Email
+        String email,
 
-    @NotBlank
-    @Length(min = 8, max = 35)
-    private String password;
+        @NotBlank
+        @Length(min = 8, max = 35)
+        String password,
 
-    @NotBlank
-    @Length(min = 8, max = 35)
-    private String repeatPassword;
+        @NotBlank
+        @Length(min = 8, max = 35)
+        String repeatPassword,
 
-    @NotBlank
-    private String firstName;
+        @NotBlank
+        String firstName,
 
-    @NotBlank
-    private String lastName;
+        @NotBlank
+        String lastName,
 
-    @NotBlank
-    private String shippingAddress;
+        @NotBlank
+        String shippingAddress
+) {
+
 }

@@ -1,24 +1,24 @@
 databaseChangeLog:
   - changeSet:
-      id: create-users_roles-table
+      id: create-book-categories-table
       author: lora_nazarenko
       changes:
         - createTable:
-            tableName: users_roles
+            tableName: books_categories
             columns:
               - column:
-                  name: user_id
+                  name: book_id
                   type: bigint
                   constraints:
                     primaryKey: true
                     nullable: false
-                    foreignKeyName: fk_users_roles_users
-                    references: users(id)
+                    foreignKeyName: fk_books_categories_books
+                    references: books(id)
               - column:
-                  name: role_id
+                  name: category_id
                   type: bigint
                   constraints:
                     primaryKey: true
                     nullable: false
-                    foreignKeyName: fk_users_roles_roles
-                    references: roles(id)
+                    foreignKeyName: fk_books_categories_categories
+                    references: categories(id)

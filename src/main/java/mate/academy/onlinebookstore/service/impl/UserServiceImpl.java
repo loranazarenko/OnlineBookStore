@@ -24,12 +24,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto) {
-        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(requestDto.email()).isPresent()) {
             throw new RegistrationException("Can't register user");
         }
 
         User user = userMapper.toModel(requestDto);
-        user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        user.setPassword(passwordEncoder.encode(requestDto.password()));
         Role role = roleRepository.getByName(Role.RoleName.USER);
         user.setRoles(Set.of(role));
         User savedUser = userRepository.save(user);
