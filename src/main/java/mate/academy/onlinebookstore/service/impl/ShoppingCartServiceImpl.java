@@ -16,7 +16,6 @@ import mate.academy.onlinebookstore.repository.book.BookRepository;
 import mate.academy.onlinebookstore.repository.user.UserRepository;
 import mate.academy.onlinebookstore.service.ShoppingCartService;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,22 +32,21 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional
     public ShoppingCartResponseDto addBookToShoppingCart(CartItemRequestDto cartItemRequestDto,
-                                                         Authentication authentication) {
+                                                         Long userId) {
         ShoppingCart shoppingCart =
-                shoppingCartRepository.findByUserEmail(authentication.getName());
+                shoppingCartRepository.findByUserId(userId);
         if (shoppingCart == null) {
             shoppingCart = new ShoppingCart();
-            User user = (User) authentication.getPrincipal();
-            User userFromBase = userRepository.getReferenceById(user.getId());
+            User userFromBase = userRepository.getReferenceById(userId);
             shoppingCart.setUser(userFromBase);
             shoppingCartRepository.save(shoppingCart);
         }
 
-        ShoppingCart finalShoppingCart = shoppingCart;
+        ShoppingCart copyShoppingCart = shoppingCart;
         cartItemRepository.findByShoppingCartAndBookId(shoppingCart, cartItemRequestDto.bookId())
                 .ifPresentOrElse(
                         cir -> cir.setQuantity(cir.getQuantity() + cartItemRequestDto.quantity()),
-                        () -> createCartItem(cartItemRequestDto, finalShoppingCart)
+                        () -> createCartItem(cartItemRequestDto, copyShoppingCart)
                 );
         return shoppingCartMapper.toDto(shoppingCart);
     }
@@ -64,9 +62,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public ShoppingCartResponseDto getShoppingCart(
             Pageable pageable,
-            Authentication authentication) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findByUserEmail(
-                authentication.getName());
+            Long userId) {
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(userId);
         return shoppingCartMapper.toDto(shoppingCart);
     }
 
@@ -74,9 +71,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public ShoppingCartResponseDto update(Long id,
                                           CartItemUpdateRequestDto cartItemUpdateRequestDto,
-                                          Authentication authentication) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findByUserEmail(
-                authentication.getName());
+                                          Long userId) {
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(userId);
         CartItem cartItem = cartItemRepository.findByShoppingCartAndId(shoppingCart, id)
                 .orElseThrow(
                         () -> new EntityNotFoundException("Can't find cart item with id " + id));
@@ -87,9 +83,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional
     public ShoppingCartResponseDto deleteById(Long id,
-                                              Authentication authentication) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findByUserEmail(
-                authentication.getName());
+                                              Long userId) {
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(userId);
         CartItem cartItem = cartItemRepository.findByShoppingCartAndId(shoppingCart, id)
                 .orElseThrow(
                         () -> new EntityNotFoundException("Can't find cart item with id " + id));

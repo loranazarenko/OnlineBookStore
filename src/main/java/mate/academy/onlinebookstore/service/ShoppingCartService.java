@@ -4,18 +4,17 @@ import mate.academy.onlinebookstore.dto.CartItemRequestDto;
 import mate.academy.onlinebookstore.dto.CartItemUpdateRequestDto;
 import mate.academy.onlinebookstore.dto.ShoppingCartResponseDto;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 
 public interface ShoppingCartService {
     ShoppingCartResponseDto addBookToShoppingCart(CartItemRequestDto cartItemRequestDto,
-                                                  Authentication authentication);
+                                                  Long userId);
 
     ShoppingCartResponseDto getShoppingCart(Pageable pageable,
-                                            Authentication authentication);
+                                            Long userId);
 
     ShoppingCartResponseDto update(Long id, CartItemUpdateRequestDto cartItemUpdateRequestDto,
-                                   Authentication authentication);
+                                   Long userId);
 
     ShoppingCartResponseDto deleteById(Long id,
-                                       Authentication authentication);
+                                       Long userId);
 }

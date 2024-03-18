@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.dto.CartItemRequestDto;
 import mate.academy.onlinebookstore.dto.CartItemUpdateRequestDto;
 import mate.academy.onlinebookstore.dto.ShoppingCartResponseDto;
+import mate.academy.onlinebookstore.entity.User;
 import mate.academy.onlinebookstore.service.ShoppingCartService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,12 +28,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
 
+    private static User getUser(Authentication authentication) {
+        return (User) authentication.getPrincipal();
+    }
+
     @GetMapping
     @Operation(summary = "Retrieve user's shopping cart",
             description = "Retrieve user's shopping cart")
     public ShoppingCartResponseDto getShoppingCart(Pageable pageable,
                                                    Authentication authentication) {
-        return shoppingCartService.getShoppingCart(pageable, authentication);
+        User user = getUser(authentication);
+        return shoppingCartService.getShoppingCart(pageable, user.getId());
     }
 
     @PostMapping
@@ -42,7 +48,8 @@ public class ShoppingCartController {
     public ShoppingCartResponseDto addBookToShoppingCart(@RequestBody @Valid
                                                          CartItemRequestDto cartItemRequestDto,
                                                          Authentication authentication) {
-        return shoppingCartService.addBookToShoppingCart(cartItemRequestDto, authentication);
+        User user = getUser(authentication);
+        return shoppingCartService.addBookToShoppingCart(cartItemRequestDto, user.getId());
     }
 
     @PutMapping("/cart-items/{cartItemId}")
@@ -53,7 +60,8 @@ public class ShoppingCartController {
                                           @RequestBody @Valid
                                           CartItemUpdateRequestDto cartItemUpdateRequestDto,
                                           Authentication authentication) {
-        return shoppingCartService.update(cartItemId, cartItemUpdateRequestDto, authentication);
+        User user = getUser(authentication);
+        return shoppingCartService.update(cartItemId, cartItemUpdateRequestDto, user.getId());
     }
 
     @DeleteMapping("/cart-items/{cartItemId}")
@@ -65,6 +73,7 @@ public class ShoppingCartController {
             })
     public ShoppingCartResponseDto delete(@PathVariable Long cartItemId,
                                           Authentication authentication) {
-        return shoppingCartService.deleteById(cartItemId, authentication);
+        User user = getUser(authentication);
+        return shoppingCartService.deleteById(cartItemId, user.getId());
     }
 }

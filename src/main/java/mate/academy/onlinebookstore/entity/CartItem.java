@@ -9,12 +9,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Entity
-@Data
+@Getter
+@Setter
 @SQLDelete(sql = "UPDATE cart_items SET is_deleted = TRUE WHERE id = ?")
 @Where(clause = "is_deleted = FALSE")
 @Table(name = "cart_items")
