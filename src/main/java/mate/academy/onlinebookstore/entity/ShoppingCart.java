@@ -29,15 +29,12 @@ import org.hibernate.annotations.Where;
 public class ShoppingCart {
     @Id
     private Long id;
-
     @MapsId
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "id", nullable = false)
     private User user;
-
     @OneToMany(mappedBy = "shoppingCart")
     private Set<CartItem> cartItems = new HashSet<>();
-
     @Column(nullable = false, name = "is_deleted")
     private boolean isDeleted = false;
 }

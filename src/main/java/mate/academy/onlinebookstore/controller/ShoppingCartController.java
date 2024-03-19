@@ -28,17 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
 
-    private static User getUser(Authentication authentication) {
-        return (User) authentication.getPrincipal();
-    }
-
     @GetMapping
     @Operation(summary = "Retrieve user's shopping cart",
             description = "Retrieve user's shopping cart")
     public ShoppingCartResponseDto getShoppingCart(Pageable pageable,
                                                    Authentication authentication) {
         User user = getUser(authentication);
-        return shoppingCartService.getShoppingCart(pageable, user.getId());
+        return shoppingCartService.findShoppingCart(pageable, user.getId());
     }
 
     @PostMapping
@@ -55,13 +51,14 @@ public class ShoppingCartController {
     @PutMapping("/cart-items/{cartItemId}")
     @Operation(summary = "Update quantity of a book in the shopping cart",
             description = "Update quantity of a book in the shopping cart")
-    public ShoppingCartResponseDto update(@PathVariable
+    public ShoppingCartResponseDto updateShoppingCart(@PathVariable
                                           Long cartItemId,
                                           @RequestBody @Valid
                                           CartItemUpdateRequestDto cartItemUpdateRequestDto,
                                           Authentication authentication) {
         User user = getUser(authentication);
-        return shoppingCartService.update(cartItemId, cartItemUpdateRequestDto, user.getId());
+        return shoppingCartService.updateShoppingCart(cartItemId,
+                cartItemUpdateRequestDto, user.getId());
     }
 
     @DeleteMapping("/cart-items/{cartItemId}")
@@ -71,9 +68,13 @@ public class ShoppingCartController {
                             description = "Remove a book from the shopping cart"),
                     @ApiResponse(responseCode = "401", description = "Not found ID"),
             })
-    public ShoppingCartResponseDto delete(@PathVariable Long cartItemId,
+    public ShoppingCartResponseDto deleteShoppingCart(@PathVariable Long cartItemId,
                                           Authentication authentication) {
         User user = getUser(authentication);
         return shoppingCartService.deleteById(cartItemId, user.getId());
+    }
+
+    private static User getUser(Authentication authentication) {
+        return (User) authentication.getPrincipal();
     }
 }

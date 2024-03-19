@@ -33,46 +33,32 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public ShoppingCartResponseDto addBookToShoppingCart(CartItemRequestDto cartItemRequestDto,
                                                          Long userId) {
-        ShoppingCart shoppingCart =
-                shoppingCartRepository.findByUserId(userId);
-        if (shoppingCart == null) {
-            shoppingCart = new ShoppingCart();
-            User userFromBase = userRepository.getReferenceById(userId);
-            shoppingCart.setUser(userFromBase);
-            shoppingCartRepository.save(shoppingCart);
-        }
-
-        ShoppingCart copyShoppingCart = shoppingCart;
+        ShoppingCart shoppingCart = getShoppingCart(userId);
         cartItemRepository.findByShoppingCartAndBookId(shoppingCart, cartItemRequestDto.bookId())
                 .ifPresentOrElse(
-                        cir -> cir.setQuantity(cir.getQuantity() + cartItemRequestDto.quantity()),
-                        () -> createCartItem(cartItemRequestDto, copyShoppingCart)
+                        cartItem ->
+                                cartItem.setQuantity(cartItem.getQuantity()
+                                                     + cartItemRequestDto.quantity()),
+                        () -> createCartItem(cartItemRequestDto, shoppingCart)
                 );
         return shoppingCartMapper.toDto(shoppingCart);
     }
 
-    private void createCartItem(CartItemRequestDto cartItemRequestDto, ShoppingCart shoppingCart) {
-        CartItem cartItem = cartItemMapper.toModel(cartItemRequestDto);
-        cartItem.setBook(bookRepository.getReferenceById(cartItemRequestDto.bookId()));
-        cartItem.setShoppingCart(shoppingCart);
-        cartItemRepository.save(cartItem);
-    }
-
     @Override
     @Transactional
-    public ShoppingCartResponseDto getShoppingCart(
+    public ShoppingCartResponseDto findShoppingCart(
             Pageable pageable,
             Long userId) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(userId);
-        return shoppingCartMapper.toDto(shoppingCart);
+        return shoppingCartMapper.toDto(getShoppingCart(userId));
     }
 
     @Override
     @Transactional
-    public ShoppingCartResponseDto update(Long id,
-                                          CartItemUpdateRequestDto cartItemUpdateRequestDto,
-                                          Long userId) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(userId);
+    public ShoppingCartResponseDto updateShoppingCart(Long id,
+                                                      CartItemUpdateRequestDto
+                                                              cartItemUpdateRequestDto,
+                                                      Long userId) {
+        ShoppingCart shoppingCart = getShoppingCart(userId);
         CartItem cartItem = cartItemRepository.findByShoppingCartAndId(shoppingCart, id)
                 .orElseThrow(
                         () -> new EntityNotFoundException("Can't find cart item with id " + id));
@@ -84,11 +70,33 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public ShoppingCartResponseDto deleteById(Long id,
                                               Long userId) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(userId);
+        ShoppingCart shoppingCart = getShoppingCart(userId);
         CartItem cartItem = cartItemRepository.findByShoppingCartAndId(shoppingCart, id)
                 .orElseThrow(
                         () -> new EntityNotFoundException("Can't find cart item with id " + id));
         shoppingCart.getCartItems().remove(cartItem);
         return shoppingCartMapper.toDto(shoppingCart);
+    }
+
+    private void createCartItem(CartItemRequestDto cartItemRequestDto, ShoppingCart shoppingCart) {
+        CartItem cartItem = cartItemMapper.toModel(cartItemRequestDto);
+        cartItem.setBook(bookRepository.getReferenceById(cartItemRequestDto.bookId()));
+        cartItem.setShoppingCart(shoppingCart);
+        cartItemRepository.save(cartItem);
+    }
+
+    private ShoppingCart createShoppingCart(Long userId) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        User userFromBase = userRepository.getReferenceById(userId);
+        shoppingCart.setUser(userFromBase);
+        shoppingCartRepository.save(shoppingCart);
+        return shoppingCart;
+    }
+
+    private ShoppingCart getShoppingCart(Long userId) {
+        ShoppingCart shoppingCart =
+                shoppingCartRepository.findByUserId(userId)
+                        .orElseGet(() -> createShoppingCart(userId));
+        return shoppingCart;
     }
 }
