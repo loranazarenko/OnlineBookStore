@@ -57,8 +57,8 @@ public class ShoppingCartController {
                                           CartItemUpdateRequestDto cartItemUpdateRequestDto,
                                           Authentication authentication) {
         User user = getUser(authentication);
-        return shoppingCartService.updateShoppingCart(cartItemId,
-                cartItemUpdateRequestDto, user.getId());
+        return shoppingCartService.updateShoppingCart(cartItemId, user.getId(),
+                cartItemUpdateRequestDto);
     }
 
     @DeleteMapping("/cart-items/{cartItemId}")

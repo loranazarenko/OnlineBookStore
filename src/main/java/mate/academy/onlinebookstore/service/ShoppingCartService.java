@@ -12,9 +12,9 @@ public interface ShoppingCartService {
     ShoppingCartResponseDto findShoppingCart(Pageable pageable,
                                              Long userId);
 
-    ShoppingCartResponseDto updateShoppingCart(Long id,
-                                               CartItemUpdateRequestDto cartItemUpdateRequestDto,
-                                               Long userId);
+    ShoppingCartResponseDto updateShoppingCart(Long id, Long userId,
+                                               CartItemUpdateRequestDto cartItemUpdateRequestDto
+                                               );
 
     ShoppingCartResponseDto deleteById(Long id,
                                        Long userId);
