@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-order_items-table
+      author: lora_nazarenko
+      changes:
+        - createTable:
+            tableName: order_items
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: order_id
+                  type: bigint
+                  constraints:
+                    nullable: true
+              - column:
+                  name: book_id
+                  type: bigint
+                  constraints:
+                    nullable: true
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: true
+              - column:
+                  name: price
+                  type: decimal
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

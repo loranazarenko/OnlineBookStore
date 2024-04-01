@@ -22,11 +22,11 @@ public interface BookMapper {
     void updateBookFromDto(CreateBookRequestDto dto, @MappingTarget Book book);
 
     @AfterMapping
-    default void setCategoryIds(@MappingTarget BookDto bookDto, Book book) {
+    default BookDto setCategoryIds(@MappingTarget BookDto bookDto, Book book) {
         if (book.getCategories() == null) {
-            return;
+            return null;
         }
-        new BookDto(
+        return new BookDto(
                 bookDto.id(),
                 bookDto.title(),
                 bookDto.author(),
