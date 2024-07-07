@@ -12,7 +12,7 @@ import mate.academy.onlinebookstore.dto.CreateBookRequestDto;
 import mate.academy.onlinebookstore.entity.Book;
 import mate.academy.onlinebookstore.entity.Category;
 
-public class UtilsForTests {
+public class TestUtils {
     public static final Long FIRST_MOCK_ID = 1L;
 
     public static final Long SECOND_MOCK_ID = 2L;

@@ -1,6 +1,6 @@
 package mate.academy.onlinebookstore.service;
 
-import static mate.academy.onlinebookstore.util.UtilsForTests.createCategoryRequestDto;
+import static mate.academy.onlinebookstore.util.TestUtils.createCategoryRequestDto;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,7 +21,7 @@ import mate.academy.onlinebookstore.entity.Category;
 import mate.academy.onlinebookstore.mapper.CategoryMapper;
 import mate.academy.onlinebookstore.repository.CategoryRepository;
 import mate.academy.onlinebookstore.service.impl.CategoryServiceImpl;
-import mate.academy.onlinebookstore.util.UtilsForTests;
+import mate.academy.onlinebookstore.util.TestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,11 +47,11 @@ public class CategoryServiceTest {
         Test findAll() method. It returns list of all categories
             """)
     void findAll_validPageable_returnsAllCategories() {
-        //given
-        Category category1 = UtilsForTests.createFirstCategory();
-        Category category2 = UtilsForTests.createSecondCategory();
-        CategoryResponseDto categoryResponseDto1 = UtilsForTests.categoryToResponseDto(category1);
-        CategoryResponseDto categoryResponseDto2 = UtilsForTests.categoryToResponseDto(category2);
+        //Given
+        Category category1 = TestUtils.createFirstCategory();
+        Category category2 = TestUtils.createSecondCategory();
+        CategoryResponseDto categoryResponseDto1 = TestUtils.categoryToResponseDto(category1);
+        CategoryResponseDto categoryResponseDto2 = TestUtils.categoryToResponseDto(category2);
         List<Category> expected = List.of(category1, category2);
         List<CategoryResponseDto> expectedDto = List.of(categoryResponseDto1, categoryResponseDto2);
         Pageable pageable = PageRequest.of(0, 5);
@@ -59,10 +59,10 @@ public class CategoryServiceTest {
         when(categoryRepository.findAll(pageable)).thenReturn(new PageImpl<>(expected));
         when(categoryMapper.toDto(category1)).thenReturn(categoryResponseDto1);
 
-        //when
+        //When
         List<CategoryResponseDto> actual = categoryService.findAll(pageable);
 
-        //then
+        //Then
         assertEquals(expectedDto.get(0), actual.get(0));
     }
 
@@ -71,17 +71,17 @@ public class CategoryServiceTest {
         Test getById() method. It returns one category
             """)
     void getById_validId_returnsOneCategory() {
-        //given
-        Category category1 = UtilsForTests.createFirstCategory();
-        CategoryResponseDto expectedDto = UtilsForTests.categoryToResponseDto(category1);
-        when(categoryRepository.findById(UtilsForTests.FIRST_MOCK_ID))
+        //Given
+        Category category1 = TestUtils.createFirstCategory();
+        CategoryResponseDto expectedDto = TestUtils.categoryToResponseDto(category1);
+        when(categoryRepository.findById(TestUtils.FIRST_MOCK_ID))
                 .thenReturn(Optional.of(category1));
         when(categoryMapper.toDto(category1)).thenReturn(expectedDto);
 
-        //when
-        CategoryResponseDto actual = categoryService.getById(UtilsForTests.FIRST_MOCK_ID);
+        //When
+        CategoryResponseDto actual = categoryService.getById(TestUtils.FIRST_MOCK_ID);
 
-        //then
+        //Then
         assertEquals(expectedDto.id(), actual.id());
     }
 
@@ -90,20 +90,20 @@ public class CategoryServiceTest {
         Test update() method. It updates one category
             """)
     public void update_validId_returnsUpdateOneCategory() {
-        //given
-        Category editedCategory = UtilsForTests.createFirstCategory();
-        CategoryResponseDto editedCategoryDto = UtilsForTests.categoryToResponseDto(editedCategory);
+        //Given
+        Category editedCategory = TestUtils.createFirstCategory();
+        CategoryResponseDto editedCategoryDto = TestUtils.categoryToResponseDto(editedCategory);
         editedCategory.setDescription(editedCategoryDto.description());
         CategoryRequestDto editedDto = createCategoryRequestDto();
-        when(categoryRepository.findById(UtilsForTests.FIRST_MOCK_ID))
+        when(categoryRepository.findById(TestUtils.FIRST_MOCK_ID))
                 .thenReturn(Optional.of(editedCategory));
         when(categoryRepository.save(editedCategory)).thenReturn(editedCategory);
         when(categoryMapper.toDto(editedCategory)).thenReturn(editedCategoryDto);
 
-        //when
+        //When
         CategoryResponseDto actual = categoryService.update(editedCategory.getId(), editedDto);
 
-        //then
+        //Then
         assertEquals(editedCategory.getName(), actual.name());
     }
 
@@ -112,14 +112,14 @@ public class CategoryServiceTest {
         Test deleteById() method. It deletes one category by id
             """)
     public void deleteById_validId_ok() {
-        //given
-        doNothing().when(categoryRepository).deleteById(UtilsForTests.FIRST_MOCK_ID);
+        //Given
+        doNothing().when(categoryRepository).deleteById(TestUtils.FIRST_MOCK_ID);
 
-        //when
-        categoryService.deleteById(UtilsForTests.FIRST_MOCK_ID);
+        //When
+        categoryService.deleteById(TestUtils.FIRST_MOCK_ID);
 
-        //then
-        verify(categoryRepository, times(1)).deleteById(UtilsForTests.FIRST_MOCK_ID);
+        //Then
+        verify(categoryRepository, times(1)).deleteById(TestUtils.FIRST_MOCK_ID);
     }
 
     @Test
@@ -128,16 +128,16 @@ public class CategoryServiceTest {
             + "add category to database and return CategoryResponseDto
                 """)
     public void save_checkValidData_createOneCategory() {
-        //given
-        Category category = UtilsForTests.createFirstCategory();
+        //Given
+        Category category = TestUtils.createFirstCategory();
         Pageable pageable = PageRequest.of(0, 5);
         Page<Category> categoryPage = new PageImpl<>(Collections.singletonList(category));
         when(categoryRepository.findAll(pageable)).thenReturn(categoryPage);
 
-        //when
+        //When
         List<CategoryResponseDto> categoryDtos = categoryService.findAll(pageable);
 
-        //then
+        //Then
         assertThat(categoryDtos, hasSize(1));
     }
 
@@ -146,6 +146,6 @@ public class CategoryServiceTest {
         doThrow(RuntimeException.class).when(categoryRepository).deleteById(any());
 
         assertThrows(RuntimeException.class,
-                () -> categoryService.deleteById(UtilsForTests.SECOND_MOCK_ID));
+                () -> categoryService.deleteById(TestUtils.SECOND_MOCK_ID));
     }
 }

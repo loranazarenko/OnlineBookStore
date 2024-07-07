@@ -1,11 +1,11 @@
 package mate.academy.onlinebookstore.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.experimental.Accessors;
 
 @Accessors(chain = true)
 public record CategoryRequestDto(
-        @NotEmpty
+        @NotBlank
         String name,
         String description
 ) {

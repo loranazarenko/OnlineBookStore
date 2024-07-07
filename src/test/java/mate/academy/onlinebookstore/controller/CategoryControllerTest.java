@@ -20,7 +20,7 @@ import mate.academy.onlinebookstore.dto.BookDto;
 import mate.academy.onlinebookstore.dto.CategoryRequestDto;
 import mate.academy.onlinebookstore.dto.CategoryResponseDto;
 import mate.academy.onlinebookstore.entity.Category;
-import mate.academy.onlinebookstore.util.UtilsForTests;
+import mate.academy.onlinebookstore.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -118,12 +118,12 @@ public class CategoryControllerTest {
     @WithMockUser(roles = {"USER", "ADMIN"})
     void getAll_CheckRequest_ReturnPageWithAllCategories() throws Exception {
         //Given
-        Category categoryFirst = UtilsForTests.createFirstCategory();
-        Category categorySecond = UtilsForTests.createSecondCategory();
+        Category categoryFirst = TestUtils.createFirstCategory();
+        Category categorySecond = TestUtils.createSecondCategory();
         CategoryResponseDto categoryResponseDtoFirst =
-                UtilsForTests.categoryToResponseDto(categoryFirst);
+                TestUtils.categoryToResponseDto(categoryFirst);
         CategoryResponseDto categoryResponseDtoSecond =
-                UtilsForTests.categoryToResponseDto(categorySecond);
+                TestUtils.categoryToResponseDto(categorySecond);
         List<CategoryResponseDto> expected =
                 List.of(categoryResponseDtoFirst, categoryResponseDtoSecond);
         Pageable pageable = PageRequest.of(0, 5);
@@ -151,8 +151,8 @@ public class CategoryControllerTest {
     @WithMockUser(roles = {"USER", "ADMIN"})
     void getCategoryById_CheckValidId_ReturnOneCategory() throws Exception {
         //Given
-        Category category = UtilsForTests.createFirstCategory();
-        CategoryResponseDto expected = UtilsForTests.categoryToResponseDto(category);
+        Category category = TestUtils.createFirstCategory();
+        CategoryResponseDto expected = TestUtils.categoryToResponseDto(category);
 
         //When
         MvcResult result = mockMvc.perform(get("/categories/{id}",
@@ -189,12 +189,12 @@ public class CategoryControllerTest {
     @WithMockUser(roles = {"ADMIN"})
     public void createCategory_CheckValidData_CreateOneCategory() throws Exception {
         //Given
-        CategoryRequestDto categoryRequestDto = UtilsForTests.createCategoryRequestDto();
+        CategoryRequestDto categoryRequestDto = TestUtils.createCategoryRequestDto();
         Category categoryCreated = new Category()
                 .setName(categoryRequestDto.name())
                 .setDescription(categoryRequestDto.description());
 
-        CategoryResponseDto expected = UtilsForTests.categoryToResponseDto(categoryCreated);
+        CategoryResponseDto expected = TestUtils.categoryToResponseDto(categoryCreated);
 
         //When
         MvcResult result = mockMvc.perform(post("/categories")
@@ -217,11 +217,11 @@ public class CategoryControllerTest {
         //Given
         Long updatedCategoryId = 1L;
         CategoryRequestDto categoryRequestDto =
-                UtilsForTests.createCategoryRequestDto();
+                TestUtils.createCategoryRequestDto();
         Category updated = new Category()
                 .setName(categoryRequestDto.name())
                 .setDescription(categoryRequestDto.description());
-        CategoryResponseDto updatedDto = UtilsForTests.categoryToResponseDto(updated);
+        CategoryResponseDto updatedDto = TestUtils.categoryToResponseDto(updated);
         CategoryResponseDto expected = new CategoryResponseDto(
                 updatedCategoryId,
                 updatedDto.name(),
@@ -247,7 +247,7 @@ public class CategoryControllerTest {
     @DisplayName("Check delete(). Check if delete some category")
     @WithMockUser(roles = {"ADMIN"})
     void delete_ValidId_Ok() throws Exception {
-        Category deleted = UtilsForTests.createFirstCategory();
+        Category deleted = TestUtils.createFirstCategory();
         mockMvc.perform(delete("/categories/{id}", deleted.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

@@ -1,15 +1,15 @@
 package mate.academy.onlinebookstore.controller;
 
-import static mate.academy.onlinebookstore.util.UtilsForTests.createFirstBook;
-import static mate.academy.onlinebookstore.util.UtilsForTests.createSecondBook;
-import static mate.academy.onlinebookstore.util.UtilsForTests.createThirdBook;
+import static mate.academy.onlinebookstore.util.TestUtils.createFirstBook;
+import static mate.academy.onlinebookstore.util.TestUtils.createSecondBook;
+import static mate.academy.onlinebookstore.util.TestUtils.createThirdBook;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,7 +23,8 @@ import mate.academy.onlinebookstore.dto.BookDto;
 import mate.academy.onlinebookstore.dto.CreateBookRequestDto;
 import mate.academy.onlinebookstore.entity.Book;
 import mate.academy.onlinebookstore.entity.Category;
-import mate.academy.onlinebookstore.util.UtilsForTests;
+import mate.academy.onlinebookstore.exception.EntityNotFoundException;
+import mate.academy.onlinebookstore.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,6 @@ import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
@@ -123,11 +123,11 @@ public class BookControllerTest {
     @WithMockUser(roles = {"USER", "ADMIN"})
     void getAll_checkRequest_returnPageWithBooks() throws Exception {
         //Given
-        Category category1 = UtilsForTests.createFirstCategory();
-        Category category2 = UtilsForTests.createSecondCategory();
-        BookDto firstBookDto = UtilsForTests.createBookDto(createFirstBook(Set.of(category1)));
-        BookDto secondBookDto = UtilsForTests.createBookDto(createSecondBook(Set.of(category2)));
-        BookDto thirdBookDto = UtilsForTests.createBookDto(createThirdBook(Set.of(category2)));
+        Category category1 = TestUtils.createFirstCategory();
+        Category category2 = TestUtils.createSecondCategory();
+        BookDto firstBookDto = TestUtils.createBookDto(createFirstBook(Set.of(category1)));
+        BookDto secondBookDto = TestUtils.createBookDto(createSecondBook(Set.of(category2)));
+        BookDto thirdBookDto = TestUtils.createBookDto(createThirdBook(Set.of(category2)));
         List<BookDto> expected = List.of(firstBookDto, secondBookDto, thirdBookDto);
         Pageable pageable = PageRequest.of(0, 5);
 
@@ -154,11 +154,11 @@ public class BookControllerTest {
         Check getBookById(). Check if return a one book by id from database
             """)
     @WithMockUser(roles = {"USER", "ADMIN"})
-    void getBookById_checkValidId_returnOneBook() throws Exception {
+    void getBookById_ValidId_Ok() throws Exception {
         //Given
-        Category category = UtilsForTests.createFirstCategory();
+        Category category = TestUtils.createFirstCategory();
         Book book = createFirstBook(Set.of(category));
-        BookDto expected = UtilsForTests.createBookDto(book);
+        BookDto expected = TestUtils.createBookDto(book);
 
         //When
         MvcResult result = mockMvc.perform(get("/books/{id}", book.getId())
@@ -178,15 +178,17 @@ public class BookControllerTest {
         Check wrong getBookById(). Check throw a exception
             """)
     @WithMockUser(roles = {"USER", "ADMIN"})
-    void getBookById_checkInvalidId_returnOneBook() throws Exception {
+    void getBookById_InvalidId_ShouldThrowException() throws Exception {
         //Given
         Long invalidId = 9L;
-        String message = "Can't find book by id9";
         //When Then
-        ResultActions resultActions = mockMvc.perform(get("/books/{id}", invalidId)
+        mockMvc.perform(get("/books/{id}", invalidId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("message").value(message));
+                .andExpect(result -> assertTrue(result.getResolvedException()
+                        instanceof EntityNotFoundException))
+                .andExpect(result -> assertEquals("Can't find book by id%s"
+                        .formatted(9), result.getResolvedException().getMessage()));
     }
 
     @Test
@@ -195,11 +197,11 @@ public class BookControllerTest {
                  + "add book to database and return bookDto
                  """)
     @WithMockUser(roles = {"ADMIN"})
-    public void createBook_checkValidData_createOneBook() throws Exception {
+    public void createBook_ValidRequestDto_Ok() throws Exception {
         //Given
-        CreateBookRequestDto requestDto = UtilsForTests.createRequestDto(
-                List.of(UtilsForTests.createFirstCategory().getId()));
-        BookDto expected = UtilsForTests.createBookDto(requestDto);
+        CreateBookRequestDto requestDto = TestUtils.createRequestDto(
+                List.of(TestUtils.createFirstCategory().getId()));
+        BookDto expected = TestUtils.createBookDto(requestDto);
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
         //When
         MvcResult result = mockMvc.perform(
@@ -220,14 +222,50 @@ public class BookControllerTest {
         Check updateBook(). Check if update data some book
             """)
     @WithMockUser(roles = {"USER", "ADMIN"})
-    void updateBook_checkValidId_updatedOneBook() throws Exception {
+    void updateBook_NotExistingBook_ShouldThrowException() throws Exception {
+        //Given
+        Long invalidId = 15L;
+        CreateBookRequestDto requestDto =
+                TestUtils.createRequestDto(List.of(
+                        TestUtils.createFirstCategory().getId()));
+
+        BookDto updated = TestUtils.createBookDto(requestDto);
+
+        BookDto expected = new BookDto(
+                invalidId,
+                updated.title(),
+                updated.author(),
+                updated.isbn(),
+                updated.price(),
+                updated.description(),
+                updated.coverImage(),
+                updated.categoryIds()
+        );
+        String jsonRequest = objectMapper.writeValueAsString(requestDto);
+        //When
+        mockMvc.perform(put("/books/{id}", invalidId)
+                        .content(jsonRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException()
+                        instanceof EntityNotFoundException))
+                .andExpect(result -> assertEquals("Can't find book by id%s"
+                        .formatted(invalidId), result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    @DisplayName("""
+        Check updateBook(). Check if update data some book
+            """)
+    @WithMockUser(roles = {"USER", "ADMIN"})
+    void updateBook_ExistingBookWithValidRequestDto_Ok() throws Exception {
         //Given
         Long updatedBookId = 1L;
         CreateBookRequestDto requestDto =
-                UtilsForTests.createRequestDto(List.of(
-                        UtilsForTests.createFirstCategory().getId()));
+                TestUtils.createRequestDto(List.of(
+                        TestUtils.createFirstCategory().getId()));
 
-        BookDto updated = UtilsForTests.createBookDto(requestDto);
+        BookDto updated = TestUtils.createBookDto(requestDto);
 
         BookDto expected = new BookDto(
                 updatedBookId,
@@ -259,7 +297,7 @@ public class BookControllerTest {
             """)
     @WithMockUser(roles = {"ADMIN"})
     void delete_validId_ok() throws Exception {
-        Book deleted = UtilsForTests.createFirstBook(Set.of(UtilsForTests.createFirstCategory()));
+        Book deleted = TestUtils.createFirstBook(Set.of(TestUtils.createFirstCategory()));
         mockMvc.perform(delete("/books/{id}", deleted.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
