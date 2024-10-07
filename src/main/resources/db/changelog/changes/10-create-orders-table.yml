@@ -2,6 +2,11 @@ databaseChangeLog:
   - changeSet:
       id: create-orders-table
       author: lora_nazarenko
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: orders
       changes:
         - createTable:
             tableName: orders
@@ -34,7 +39,6 @@ databaseChangeLog:
                     nullable: true
               - column:
                   name: is_deleted
-                  type: boolean
-                  defaultValueBoolean: false
+                  type: bit
                   constraints:
                     nullable: false

@@ -61,7 +61,7 @@ public class BookServiceTest {
         List<Book> expected = List.of(firstBook, secondBook);
         List<BookDto> expectedDto = List.of(firstBookDto, secondBookDto);
         Pageable pageable = PageRequest.of(0, 5);
-        when(bookRepository.findAll(pageable)).thenReturn(new PageImpl<>(expected));
+        when(bookRepository.findAllWithCategories(pageable)).thenReturn(expected);
         when(bookMapper.toDto(firstBook)).thenReturn(firstBookDto);
         //When
         List<BookDto> actual = bookService.findAll(pageable);
@@ -136,7 +136,7 @@ public class BookServiceTest {
         List<Book> bookList = Collections.singletonList(createBook);
         Pageable pageable = PageRequest.of(0, 5);
         Page<Book> bookPage = new PageImpl<>(bookList, pageable, bookList.size());
-        when(bookRepository.findAll(pageable)).thenReturn(bookPage);
+        when(bookRepository.findAllWithCategories(pageable)).thenReturn(bookList);
 
         //When
         List<BookDto> bookDtos = bookService.findAll(pageable);

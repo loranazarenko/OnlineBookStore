@@ -3,7 +3,7 @@ package mate.academy.onlinebookstore.config;
 import org.testcontainers.containers.MySQLContainer;
 
 public class CustomMySqlContainer extends MySQLContainer<CustomMySqlContainer> {
-    private static final String DB_IMAGE = "mysql";
+    private static final String DB_IMAGE = "mysql:8";
 
     private static CustomMySqlContainer mysqlContainer;
 
