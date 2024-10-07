@@ -30,7 +30,7 @@ databaseChangeLog:
                   value: alice@com.net
               - column:
                   name: password
-                  value: $2a$10$fKNjRbcGU4uIGlnAmgh1E.Jc2./abkbOe7lwOl4jlDaL8sTbxt01.
+                  value: "$2a$12$sD0TdJA7QCPWt4UC2qBN8uTe8qftclSa5Aphzy3HQEXUIG6BUsABG"
               - column:
                   name: first_name
                   value: Alice
@@ -55,7 +55,7 @@ databaseChangeLog:
                   value: bob@com.net
               - column:
                   name: password
-                  value: $2a$10$fKNjRbcGU4uIGlnAmgh1E.Jc2./abkbOe7lwOl4jlDaL8sTbxt01.
+                  value: "$2a$12$sD0TdJA7QCPWt4UC2qBN8uTe8qftclSa5Aphzy3HQEXUIG6BUsABG"
               - column:
                   name: first_name
                   value: Bob
@@ -80,7 +80,7 @@ databaseChangeLog:
                   value: jill@com.net
               - column:
                   name: password
-                  value: $2a$10$fKNjRbcGU4uIGlnAmgh1E.Jc2./abkbOe7lwOl4jlDaL8sTbxt01.
+                  value: "$2a$12$sD0TdJA7QCPWt4UC2qBN8uTe8qftclSa5Aphzy3HQEXUIG6BUsABG"
               - column:
                   name: first_name
                   value: Jill

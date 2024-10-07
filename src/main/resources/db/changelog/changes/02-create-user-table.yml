@@ -2,6 +2,11 @@ databaseChangeLog:
   - changeSet:
       id: create-users-table
       author: lora_nazarenko
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: users
       comment: Comments should go after the precondition. Otherwise, Liquibase returns an error.
       changes:
         - createTable:
@@ -40,7 +45,7 @@ databaseChangeLog:
                   type: varchar(255)
               - column:
                   name: is_deleted
-                  type: boolean
-                  defaultValueBoolean: false
+                  type: bit
+                  defaultValueComputed: b'0'
                   constraints:
                     nullable: false
