@@ -1,9 +1,9 @@
 <div align="center"><h1><img src=src/main/resources/images/logo.png width="300" align="center" alt="Book store"/></h1></div>
-<div align="center"><h1> Book Store </h1></div>
+<div align="center"><h1> Book Shelf </h1></div>
 
 ### ___
 
-### Welcome to the Book Store project. 
+### Welcome to the Book Shelf project. 
  This application is a platform for buying books in the Internet.
  It can manage this collection of books, categories, and user orders.
 
